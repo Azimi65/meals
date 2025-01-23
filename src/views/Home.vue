@@ -1,21 +1,32 @@
 <script setup>
+import { EffectFade } from 'swiper/modules'
+import { Swiper, SwiperSlide } from 'swiper/vue'
+import 'swiper/css'
+
+import 'swiper/css/effect-fade'
+import 'swiper/css/navigation'
+import 'swiper/css/pagination'
+
 import { useMealStore } from '@/stores/mealsStore'
 import axios from 'axios'
-import { onMounted,ref } from 'vue'
+import { onMounted, ref, Transition } from 'vue'
 const store = useMealStore()
 
-const spinner=ref(true)
+const spinner = ref(false)
 onMounted(() => {
-  store.getAllMeals()
-  spinner.value=false
+  // setInterval(() => {
+    store.getAllMeals()
+    // spinner.value = false
+  // }, 5000)
+
   // console.log(store.meals)
 })
+
 </script>
 
 <template>
-
   <!-- <pre>{{store.meals}}</pre> -->
-  
+
   <div role="status" v-if="spinner">
     <svg
       aria-hidden="true"
@@ -35,21 +46,53 @@ onMounted(() => {
     </svg>
     <span class="sr-only">Loading...</span>
   </div>
-  <div v-else class="flex justify-center items-center gap-3  my-10 mx-5">
-    <div v-for="meal in store.meals" :key="meal.idMeal" class="border border-1 border-gray-200 shadow-lg  rounded-xl">
-      <div class="grid grid-cols-1 md:grid-cols-2">
-        <div><img :src="meal.strMealThumb" alt="" class="rounded-tl-xl h-96 w-full object-cover"></div>
-        <div class="px-3 py-5 font-semibold">{{meal.strInstructions}}</div>
+  <div v-else class="flex justify-center items-center gap-3 my-10 mx-5 overflow-hidden">
+    <swiper
+     :modules="[EffectFade]" effect="fade"
+      :slides-per-view="1"
+      
+      :fadeEffect= "{ crossFade: true }"
+
+      :pagination="{ clickable: true }"
+      :scrollbar="{ draggable: true }"
+      @swiper="onSwiper"
+      @slideChange="onSlideChange"
+    >
+      <div
+        v-for="meal in store.meals"
+        :data-index="index"
+        :key="meal.idMeal"
+        class="border border-1 border-gray-200 shadow-lg rounded-xl"
+      >
+        <swiper-slide>
+          <div class="grid grid-cols-1 md:grid-cols-2">
+            <div>
+              <img :src="meal.strMealThumb" alt="" class="rounded-tl-xl h-96 w-full object-cover" />
+            </div>
+            <div class="px-3 py-5 font-semibold">{{ meal.strInstructions }}</div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2">
+            <h2
+              class="font-bold py-5 flex justify-start px-3 text-indigo-600 hover:text-indigo-800"
+            >
+              {{ meal.strMeal }}
+            </h2>
+            <div class="px-3 grid grid-cols-1 md:grid-cols-3 py-5">
+              <div class="flex gap-2">
+                <span class="font-bold">category:</span><span>{{ meal.strCategory }}</span>
+              </div>
+              <div class="flex gap-2">
+                <span class="font-bold">Area:</span><span>{{ meal.strArea }}</span>
+              </div>
+              <div class="flex gap-2">
+                <span class="font-bold">Ingredient:</span><span>{{ meal.strTags }}</span>
+              </div>
+            </div>
+          </div>
+        </swiper-slide>
       </div>
-      <div class="grid grid-cols-1 md:grid-cols-2">
-         <h2 class="font-bold py-5 flex justify-start px-3 text-indigo-600 hover:text-indigo-800">{{ meal.strMeal }}</h2>
-         <div class="px-3 grid grid-cols-1 md:grid-cols-3 py-5">
-          <div class="flex gap-2"><span class="font-bold">category:</span><span>{{meal.strCategory}}</span></div>
-          <div class="flex gap-2"><span class="font-bold">Area:</span><span>{{meal.strArea}}</span></div>
-          <div class="flex gap-2"><span class="font-bold">Ingredient:</span><span>{{meal.strTags}}</span></div>
-         </div>
-      </div>
-     
-    </div>
+    </swiper>
   </div>
 </template>
+<style scoped></style>

@@ -72,7 +72,7 @@ onUnmounted(() => {
         
         <div
           v-show="isMobileMenuOpen"
-          class="absolute right-0 top-10 bg-white border border-gray-200 shadow-lg rounded-tl-lg p-4"
+          class="absolute z-10 right-0 top-10 bg-white border border-gray-200 shadow-lg rounded-tl-lg p-4"
         >
           <router-link
             class="block py-2 px-4 hover:bg-purple-100 rounded"
